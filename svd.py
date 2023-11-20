@@ -40,7 +40,7 @@ def compress_svd(image_path, output_path, k):
 if __name__ == "__main__":
 
     # Set the input and output file paths
-    input_image_path = "tree.jpeg"  # Change this to the path of your input image
+    input_image_path = "src_images/tree.jpeg"  # Change this to the path of your input image
     output_image_path = "compressed_image.jpeg"  # Change this to the desired output path
 
     original_size = os.path.getsize(input_image_path)
