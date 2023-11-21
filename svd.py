@@ -11,8 +11,6 @@ def compress_svd(image_path, output_path, k):
     # Convert the image to a NumPy array
     img_array = np.array(original_image)
 
-    print(img_array.shape)
-
     # Separate the image into its three color channels (R, G, B)
     red, green, blue = img_array[:, :, 0], img_array[:, :, 1], img_array[:, :, 2]
 
@@ -37,22 +35,4 @@ def compress_svd(image_path, output_path, k):
     compressed_image.save(output_path)
 
 
-if __name__ == "__main__":
-
-    # Set the input and output file paths
-    input_image_path = "src_images/tree.jpeg"  # Change this to the path of your input image
-    output_image_path = "compressed_image.jpeg"  # Change this to the desired output path
-
-    original_size = os.path.getsize(input_image_path)
-
-    # Set the number of singular values to keep (compression factor)
-    k_values = [2**i for i in range(10)]  # You can experiment with different values
-
-
-    # Apply SVD compression for each k value
-    for k in k_values:
-        output_path_k = f"compressed_image_k{k}.jpg"
-        compress_svd(input_image_path, output_path_k, k)
-        compression_ratio = os.path.getsize(output_path_k) / original_size
-        print(f"Compression with k={k} complete. Compression ratio: {compression_ratio}. Output saved to {output_path_k}")
 
