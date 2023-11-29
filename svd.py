@@ -5,6 +5,8 @@ import matplotlib.pyplot as plt
 import cv2
 from laplacian_blur_degree import *
 
+#clarifying note: according to Google, Descartes invented linear algebra, which is why he has the honor of being a sample image
+
 def compress_svd(image_path, output_path, k):
     #k is positively correlated with the amount of information retained from the original matrix
     # Load the image using Pillow
@@ -36,46 +38,65 @@ def compress_svd(image_path, output_path, k):
     # Save the compressed image
     compressed_image.save(output_path)
 
-def create_svd_graphs(k_values,compression_ratios,blur_degrees):
-    plt.xscale("log", base=2)
-    plt.plot(k_values, compression_ratios)
-    plt.title("Compression ratio vs compression factor k")
-    plt.xlabel("SVD k value")
-    plt.ylabel("Compression ratio")
-    plt.savefig('./output_graphs/svd_r_v_k.png')
+def create_svd_graphs(k_values, compression_ratios, blur_degrees):
+    # Create subplots for compression ratios and blur degrees
+    fig1, ax1 = plt.subplots(figsize=(8, 5))
+    fig2, ax2 = plt.subplots(figsize=(8, 5))
 
-    plt.clf()
+    ax1.set_xscale("log", base=2)
+    ax1.plot(k_values, compression_ratios)
+    ax1.set_title("Compression ratio vs compression factor k")
+    ax1.set_xlabel("SVD k value")
+    ax1.set_ylabel("Compression ratio")
 
-    plt.xscale("log", base=2)
-    plt.plot(k_values, blur_degrees)
-    plt.title("Blur degree vs compression factor k")
-    plt.xlabel("SVD k value")
-    plt.ylabel("Blur degree")
-    plt.savefig('./output_graphs/svd_b_v_k.png')
+    ax2.set_xscale("log", base=2)
+    ax2.plot(k_values, blur_degrees)
+    ax2.set_title("Blur degree vs compression factor k")
+    ax2.set_xlabel("SVD k value")
+    ax2.set_ylabel("Blur degree")
 
-#applies svd to given image for k values 2-2^20
-def svd_driver(image_path):
-    # Set the number of singular values to keep (compression factor)
+    plt.tight_layout()
+
+    # Save the graphs separately
+    fig1.savefig('./output_graphs/compression_ratio_vs_k.png')
+    fig2.savefig('./output_graphs/blur_degree_vs_k.png')
+
+def process_images_in_folder(folder_path,k_vals):
+    count = 0
+    compression_ratios = np.zeros(len(k_vals))
+    blur_degrees = np.zeros(len(k_vals))
+    for filename in os.listdir(folder_path):
+        if filename.endswith(".jpg") or filename.endswith(".png"):  # Adjust the file extensions as needed
+            count += 1
+            image_path = os.path.join(folder_path, filename)
+            r = svd_driver(image_path,k_vals)
+            compression_ratios += r[0]
+            blur_degrees += r[1]
+
+    create_svd_graphs(k_vals, compression_ratios/count, blur_degrees/count)
+
+
+def svd_driver(image_path,k_values):
+    original_blur = calculate_blur_degree(image_path)
     original_size = os.path.getsize(image_path)
-    k_values = [2 ** i for i in range(10)]  # You can experiment with different values
 
     compression_ratios = []
     blur_degrees = []
 
     # Apply SVD compression for each k value
     for k in k_values:
-        output_path_k = f"compressed_image_k{k}.jpg"
+        output_path_k = f"compressed_image_k{k}_{os.path.basename(image_path)}"
         compress_svd(image_path, output_path_k, k)
         compression_ratio = os.path.getsize(output_path_k) / original_size
         compression_ratios.append(compression_ratio)
-        blur_degrees.append(calculate_blur_degree(output_path_k))
+        blur_degrees.append((calculate_blur_degree(output_path_k))/original_blur)
         os.rename(output_path_k, "./output_images/svd/" + output_path_k)
         print(
-            f"Compression with k={k} complete. Compression ratio: {compression_ratio}. Output saved to {output_path_k}")
-
-    create_svd_graphs(k_values,compression_ratios,blur_degrees)
-
+            f"Compression for {os.path.basename(image_path)} with k={k} complete. Compression ratio: {compression_ratio}. Output saved to {output_path_k}")
+    return (compression_ratios,blur_degrees)
 
 
-svd_driver("src_images/tree.png")
+process_images_in_folder("src_images",range(0,2**10,25))
+
+
 
