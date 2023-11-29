@@ -1,7 +1,9 @@
 from PIL import Image
 import numpy as np
 import os
+import matplotlib.pyplot as plt
 import cv2
+from laplacian_blur_degree import *
 
 def compress_svd(image_path, output_path, k):
     #k is positively correlated with the amount of information retained from the original matrix
@@ -34,16 +36,46 @@ def compress_svd(image_path, output_path, k):
     # Save the compressed image
     compressed_image.save(output_path)
 
+def create_svd_graphs(k_values,compression_ratios,blur_degrees):
+    plt.xscale("log", base=2)
+    plt.plot(k_values, compression_ratios)
+    plt.title("Compression ratio vs compression factor k")
+    plt.xlabel("SVD k value")
+    plt.ylabel("Compression ratio")
+    plt.savefig('./output_graphs/svd_r_v_k.png')
+
+    plt.clf()
+
+    plt.xscale("log", base=2)
+    plt.plot(k_values, blur_degrees)
+    plt.title("Blur degree vs compression factor k")
+    plt.xlabel("SVD k value")
+    plt.ylabel("Blur degree")
+    plt.savefig('./output_graphs/svd_b_v_k.png')
+
+#applies svd to given image for k values 2-2^20
 def svd_driver(image_path):
     # Set the number of singular values to keep (compression factor)
     original_size = os.path.getsize(image_path)
-    k_values = [2 ** i for i in range(20)]  # You can experiment with different values
+    k_values = [2 ** i for i in range(10)]  # You can experiment with different values
+
+    compression_ratios = []
+    blur_degrees = []
 
     # Apply SVD compression for each k value
     for k in k_values:
         output_path_k = f"compressed_image_k{k}.jpg"
         compress_svd(image_path, output_path_k, k)
         compression_ratio = os.path.getsize(output_path_k) / original_size
+        compression_ratios.append(compression_ratio)
+        blur_degrees.append(calculate_blur_degree(output_path_k))
         os.rename(output_path_k, "./output_images/svd/" + output_path_k)
         print(
             f"Compression with k={k} complete. Compression ratio: {compression_ratio}. Output saved to {output_path_k}")
+
+    create_svd_graphs(k_values,compression_ratios,blur_degrees)
+
+
+
+svd_driver("src_images/tree.png")
+
