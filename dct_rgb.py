@@ -113,6 +113,6 @@ def folder_dct(src_folder,granularity):
     ax1.set_xlabel("Compression Ratio")
     ax1.set_ylabel("Blur Degree")
 
-    fig1.savefig('./output_graphs/dct/compression_ratio_vs_blur_degree.png')
+    fig1.savefig('./output_graphs/dct/compression_ratio_vs_blur_degree_rgb.png')
 
 folder_dct('./src_images',10)
