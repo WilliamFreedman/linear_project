@@ -2,7 +2,6 @@ from PIL import Image
 import numpy as np
 import os
 import matplotlib.pyplot as plt
-import cv2
 from laplacian_blur_degree import *
 
 #clarifying note: according to Google, Descartes invented linear algebra, which is why he has the honor of being a sample image
@@ -56,7 +55,7 @@ def create_svd_graphs(k_values, compression_ratios, blur_degrees):
     ax2.set_xlabel("SVD k value")
     ax2.set_ylabel("Blur degree")
 
-    ax3.set_xscale("log", base=2)
+    #ax3.set_xscale("log", base=2)
     ax3.plot(compression_ratios, blur_degrees)
     ax3.set_title("Compression Ratio vs. Blur Degree")
     ax3.set_xlabel("Compression Ratio")
@@ -85,8 +84,22 @@ def process_images_in_folder(folder_path,k_vals):
 
 
 def svd_driver(image_path,k_values):
-    original_blur = calculate_blur_degree(image_path)
-    original_size = os.path.getsize(image_path)
+
+    original_image = Image.open(image_path)
+
+    # Convert the image to a NumPy array
+    img_array = np.array(original_image)
+
+    uncompressed = Image.fromarray(img_array)
+
+    # Save the compressed image
+    uncompressed.save("./temp.png")
+
+
+    original_blur = calculate_blur_degree("./temp.png")
+    original_size = os.path.getsize("./temp.png")
+
+    os.remove("./temp.png")
 
     compression_ratios = []
     blur_degrees = []
@@ -105,7 +118,5 @@ def svd_driver(image_path,k_values):
 
 
 
-#process_images_in_folder("src_images",list(range(24))+list(range(24,2**10,25)))
-
-process_images_in_folder("src_images",list(range(5)))
+process_images_in_folder("src_images",list(range(24))+list(range(24,2**10,25)))
 
