@@ -2,7 +2,11 @@
 
 import numpy as np
 import cv2
+import matplotlib.pyplot as plt
+import os
+from laplacian_blur_degree import *
 from PIL import Image
+
 
 def dct2(a):
     return np.fft.fft2(a)
@@ -11,11 +15,9 @@ def idct2(a):
     return np.fft.ifft2(a)
 
 def compress_image(image, compression_factor, image_type):
-    # Split the image into RGB channels
-    if 'jpg' == image_type:
-        b, g, r = cv2.split(image)
-    else:
-        b, g, r, a = cv2.split(image)
+    # Split the image into RGB channel
+
+    b, g, r = cv2.split(image)
 
     # Apply DCT to each channel (excluding alpha)
     red_dct = dct2(r)
@@ -49,23 +51,68 @@ def compress_image(image, compression_factor, image_type):
             compressed_blue_channel.astype(np.uint8),
             compressed_green_channel.astype(np.uint8),
             compressed_red_channel.astype(np.uint8),
-            a  # Include the alpha channel without modification
         ])
     return compressed_image
 
 def dct_compress(image_path, output_path, compression):
     # Load image
     if '.jpg' in image_path:
-        image_type = 'jpg'
+        image_type = '.jpg'
     else:
-        image_type = 'png'
+        image_type = '.png'
     original_image = cv2.imread(image_path, cv2.IMREAD_UNCHANGED)
     # Set compression factor (adjust as needed) -> goes from 0 - 1, with 1 being full loss
     # Compress the image
     compressed_image = compress_image(original_image, compression, image_type)
-    save_image = Image.fromarray(compressed_image)
-    save_image.save(output_path)
+    cv2.imwrite(os.path.join(output_path , 'output_' + str(compression) + image_type), compressed_image)
 
-def create_out_images(image_path, output_path):
-    for i in [float(j) / 10000 for j in range(0, 10000, 1)]:
-        dct_compress(image_path, output_path, i)
+    return output_path + '/output_' + str(compression) + image_type
+
+def create_out_images(image_path, output_path, granularity):
+    compression_ratios = []
+    blur_degrees = []
+    original_image = Image.open(image_path)
+
+    # Convert the image to a NumPy array
+    img_array = np.array(original_image)
+
+    uncompressed = Image.fromarray(img_array)
+
+    # Save the compressed image
+    uncompressed.save("./temp.png")
+
+    original_blur = calculate_blur_degree("./temp.png")
+    original_size = os.path.getsize("./temp.png")
+    print(original_blur)
+
+    for i in [float(j) / granularity for j in range(0, granularity, 1)]:
+
+        r = dct_compress(image_path, './output_images', i)
+        new_size = os.path.getsize(r)
+        new_blur_degree = calculate_blur_degree(r)
+        compression_ratios.append(new_size/original_size)
+        blur_degrees.append(new_blur_degree/original_blur)
+    return (compression_ratios, blur_degrees)
+
+def folder_dct(src_folder,granularity):
+    blurs = np.zeros(granularity)
+    ratios = np.zeros(granularity)
+    count = 0
+    for filename in os.listdir(src_folder):
+        count += 1
+        filename = os.path.join(src_folder, filename)
+        print(filename)
+        r = create_out_images(filename,filename,granularity)
+        ratios += r[0]
+        blurs += r[1]
+
+    fig1, ax1 = plt.subplots(figsize=(8, 5))
+
+    ax1.plot(ratios/count, blurs/count)
+    ax1.set_title("Compression ratio vs Blue Degree for DCT")
+    ax1.set_xlabel("Compression Ratio")
+    ax1.set_ylabel("Blur Degree")
+
+    fig1.savefig('./output_graphs/dct/compression_ratio_vs_blur_degree.png')
+
+folder_dct('./src_images',10)
