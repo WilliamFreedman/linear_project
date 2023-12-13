@@ -2,7 +2,6 @@
 
 from scipy import fftpack
 import numpy as np
-import cv2
 import matplotlib.pyplot as plt
 import os
 from laplacian_blur_degree import *
