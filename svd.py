@@ -110,13 +110,16 @@ def svd_driver(image_path,k_values):
         compress_svd(image_path, output_path_k, k)
         compression_ratio = os.path.getsize(output_path_k) / original_size
         compression_ratios.append(compression_ratio)
-        blur_degrees.append((calculate_blur_degree(output_path_k))/original_blur)
+        blur_rat = (calculate_blur_degree(output_path_k))
+        blur_degrees.append(blur_rat)
         os.rename(output_path_k, "./output_images/svd/" + output_path_k)
-        print(
-            f"Compression for {os.path.basename(image_path)} with k={k} complete. Compression ratio: {compression_ratio}. Output saved to {output_path_k}")
+        print(blur_rat)
+        #print(
+         #   f"Compression for {os.path.basename(image_path)} with k={k} complete. Compression ratio: {compression_ratio}. Output saved to {output_path_k}")
     return (compression_ratios,blur_degrees)
 
 
 
-process_images_in_folder("src_images",list(range(24))+list(range(24,2**10,25)))
+
+process_images_in_folder("src_images",list(range(24))+list(range(24,2**10,100)))
 

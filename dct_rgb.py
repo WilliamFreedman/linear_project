@@ -91,7 +91,7 @@ def create_out_images(image_path, output_path, granularity):
         new_size = os.path.getsize(r)
         new_blur_degree = calculate_blur_degree(r)
         compression_ratios.append(new_size/original_size)
-        blur_degrees.append(new_blur_degree/original_blur)
+        blur_degrees.append(new_blur_degree)
     return (compression_ratios, blur_degrees)
 
 def folder_dct(src_folder,granularity):
@@ -109,7 +109,7 @@ def folder_dct(src_folder,granularity):
     fig1, ax1 = plt.subplots(figsize=(8, 5))
 
     ax1.plot(ratios/count, blurs/count)
-    ax1.set_title("Compression ratio vs Blue Degree for DCT")
+    ax1.set_title("Compression ratio vs Blur Degree for DCT")
     ax1.set_xlabel("Compression Ratio")
     ax1.set_ylabel("Blur Degree")
 
