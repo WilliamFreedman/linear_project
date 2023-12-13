@@ -1,5 +1,6 @@
 # takes both jpg and png types and compresses them
 
+from scipy import fftpack
 import numpy as np
 import cv2
 import matplotlib.pyplot as plt
@@ -9,10 +10,10 @@ from PIL import Image
 
 
 def dct2(a):
-    return np.fft.fft2(a)
+    return fftpack.dct(fftpack.dct(a.T, norm='ortho').T, norm='ortho')
 
 def idct2(a):
-    return np.fft.ifft2(a)
+    return fftpack.dct(fftpack.dct(a.T, norm='ortho').T, norm='ortho')
 
 def compress_image(image, compression_factor, image_type):
     # Split the image into RGB channel
@@ -64,7 +65,7 @@ def dct_compress(image_path, output_path, compression):
     # Set compression factor (adjust as needed) -> goes from 0 - 1, with 1 being full loss
     # Compress the image
     compressed_image = compress_image(original_image, compression, image_type)
-    cv2.imwrite(os.path.join(output_path , 'output_' + str(compression) + image_type), compressed_image)
+    cv2.imwrite(os.path.join(output_path , 'rgb_output_' + str(compression) + image_type), compressed_image)
 
     return output_path + '/output_' + str(compression) + image_type
 
