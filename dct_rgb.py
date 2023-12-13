@@ -64,7 +64,7 @@ def dct_compress(image_path, output_path, compression):
     # Set compression factor (adjust as needed) -> goes from 0 - 1, with 1 being full loss
     # Compress the image
     compressed_image = compress_image(original_image, compression, image_type)
-    cv2.imwrite(os.path.join(output_path , 'new_rgb_output_' + str(compression) + image_type), compressed_image)
+    cv2.imwrite(os.path.join(output_path , 'rgb_output_' + str(compression) + image_type), compressed_image)
 
     return output_path + '/output_' + str(compression) + image_type
 
