@@ -174,7 +174,7 @@ def folder_dct(src_folder,step_num):
     fig1, ax1 = plt.subplots(figsize=(8, 5))
 
     ax1.plot(ratios/count, blurs/count)
-    ax1.set_title("Compression ratio vs Blur Degree for DCT")
+    ax1.set_title("Compression ratio vs Blue Degree for DCT")
     ax1.set_xlabel("Compression Ratio")
     ax1.set_ylabel("Blur Degree")
 

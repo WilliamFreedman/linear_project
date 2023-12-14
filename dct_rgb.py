@@ -66,7 +66,7 @@ def dct_compress(image_path, output_path, compression):
     compressed_image = compress_image(original_image, compression, image_type)
     cv2.imwrite(os.path.join(output_path , 'rgb_output_' + str(compression) + image_type), compressed_image)
 
-    return output_path + '/output_' + str(compression) + image_type
+    return output_path + '/rgb_output_' + str(compression) + image_type
 
 def create_out_images(image_path, output_path, granularity):
     compression_ratios = []
