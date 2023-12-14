@@ -87,8 +87,8 @@ def get_next_cell(cell, N):
 # Input image in grayscale.
 
 def compress_image(image_path, output_path, step_num):
-    if '.jpg' in image_path:
-        image_type = '.jpg'
+    if '.jpeg' in image_path:
+        image_type = '.jpeg'
     else:
         image_type = '.png'
     im = cv2.imread(image_path, cv2.IMREAD_GRAYSCALE)
@@ -155,7 +155,7 @@ def create_out_images(image_path, output_path, step_num):
         new_size = os.path.getsize(r)
         new_blur_degree = calculate_blur_degree(r)
         compression_ratios.append(new_size/original_size)
-        blur_degrees.append(new_blur_degree)
+        blur_degrees.append(new_blur_degree/original_blur)
     return (compression_ratios, blur_degrees)
 
 def folder_dct(src_folder,step_num):

@@ -56,8 +56,8 @@ def compress_image(image, compression_factor, image_type):
 
 def dct_compress(image_path, output_path, compression):
     # Load image
-    if '.jpg' in image_path:
-        image_type = '.jpg'
+    if '.jpeg' in image_path:
+        image_type = '.jpeg'
     else:
         image_type = '.png'
     original_image = cv2.imread(image_path, cv2.IMREAD_UNCHANGED)
@@ -91,7 +91,7 @@ def create_out_images(image_path, output_path, granularity):
         new_size = os.path.getsize(r)
         new_blur_degree = calculate_blur_degree(r)
         compression_ratios.append(new_size/original_size)
-        blur_degrees.append(new_blur_degree)
+        blur_degrees.append(new_blur_degree/original_blur)
     return (compression_ratios, blur_degrees)
 
 def folder_dct(src_folder,granularity):

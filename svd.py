@@ -64,9 +64,9 @@ def create_svd_graphs(k_values, compression_ratios, blur_degrees):
     plt.tight_layout()
 
     # Save the graphs separately
-    fig1.savefig('./output_graphs/svd/compression_ratio_vs_k.png')
-    fig2.savefig('./output_graphs/svd/blur_degree_vs_k.png')
-    fig3.savefig('./output_graphs/svd/compression_ratio_vs_blur_degree.png')
+    fig1.savefig('./output_graphs/svd/test_compression_ratio_vs_k.png')
+    fig2.savefig('./output_graphs/svd/test_blur_degree_vs_k.png')
+    fig3.savefig('./output_graphs/svd/test_compression_ratio_vs_blur_degree.png')
 
 def process_images_in_folder(folder_path,k_vals):
     count = 0
@@ -110,7 +110,7 @@ def svd_driver(image_path,k_values):
         compress_svd(image_path, output_path_k, k)
         compression_ratio = os.path.getsize(output_path_k) / original_size
         compression_ratios.append(compression_ratio)
-        blur_rat = (calculate_blur_degree(output_path_k))
+        blur_rat = (calculate_blur_degree(output_path_k))/original_blur
         blur_degrees.append(blur_rat)
         os.rename(output_path_k, "./output_images/svd/" + output_path_k)
         print(blur_rat)
@@ -121,5 +121,5 @@ def svd_driver(image_path,k_values):
 
 
 
-process_images_in_folder("src_images",list(range(24))+list(range(24,2**10,100)))
+process_images_in_folder("src_images",list(range(24))+list(range(24,2**10,25)))
 
